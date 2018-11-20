@@ -38,7 +38,7 @@ for y in range(size[1]):
 			if pixel.a == 255:
 				heights[x][z] = (y / 2, toVal(pixel.r, pixel.g, pixel.b))
 
-world = "World(Vec2(" + str(size[0]) + ", " + str(size[2]) + "), \"assets/tileset.png\", ["
+world = "World(Vec2(" + str(size[0]) + ", " + str(size[2]) + "), ["
 for x in range(size[0]):
 	world += "[\n"
 	for z in range(size[2]):

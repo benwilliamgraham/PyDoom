@@ -5,7 +5,9 @@ from ctypes import *
 import pygame
 from pygame.locals import *
 
-from texture import *
+import assets
+
+from entity import *
 
 from OpenGL.GL import *
 from OpenGL.GLU import *
@@ -19,12 +21,18 @@ class Column(object):
 		return "Column(" + str(self.height) + ", " + str(self.texture) + ")"
 
 class World(object):
-	def __init__(self, size, tileset, columns):
+	def __init__(self, size, columns):
 		self.size = size
 		self.columns = columns
 		self.vbo = None
-		self.tileset = loadTexture(tileset)
+		self.tileset = assets.tileset
 		self.toLight = Vec3(0.4, 1, 0.7).unit()
+		self.player = Player(Vec3(1, 3, 11.5), Vec3(0, 0, 0))
+		self.visuals = [
+			Door(Vec3(-0.01, 2.5, 11.5)),
+			Door(Vec3(23.01, 2.5, 11.5))
+		]
+		self.entities = []
 
 	def __repr__(self):
 		return "World(" + str(self.size) + ", " + str(self.columns) + ")"
@@ -184,6 +192,16 @@ class World(object):
 		glBindBuffer(GL_ARRAY_BUFFER, self.vbo[2])
 		glColorPointer(3, GL_FLOAT, 0, None)
 		glDrawArrays(GL_QUADS, 0, self.size.x * self.size.y * 11)
+		for ent in range(len(self.entities) - 1, -1, -1):
+			if self.entities[ent].update(self) == True:
+				self.entities.pop(ent)
+			else:
+				self.entities[ent].draw()
+		for ent in range(len(self.visuals) - 1, -1, -1):
+			if self.visuals[ent].update(self) == True:
+				self.visuals.pop(ent)
+			else:
+				self.visuals[ent].draw()
 
 	def checkCollision(self, point):
 		point = Vec3(round(point.x), point.y, round(point.z))
