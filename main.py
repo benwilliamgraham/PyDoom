@@ -20,7 +20,7 @@ from world import *
 from entity import *
 
 def main(): 
-	gluPerspective(85, (display[0] / display[1]), 0.1, 50.0)
+	gluPerspective(70, (display[0] / display[1]), 0.1, 50.0)
 	glClearColor(0, 0, 0, 0)
 	glEnableClientState(GL_VERTEX_ARRAY)
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY)
@@ -60,7 +60,7 @@ def main():
 	glBindBuffer(GL_ARRAY_BUFFER, cvbo[2])
 	glBufferData(GL_ARRAY_BUFFER, len(ccol) * 4, (c_float * len(ccol))(*ccol), GL_STATIC_DRAW)
 
-	for i in range(5):
+	for i in range(2):
 		world.entities.append(Slime(Vec3(random.randint(1, 20), 4, random.randint(1, 20))))
 
 	while running:

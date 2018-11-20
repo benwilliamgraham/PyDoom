@@ -28,6 +28,8 @@ crosshairs = loadTexture("assets/crosshairs.png")
 door = loadTexture("assets/door.png")
 slime = loadTexture("assets/slime.png")
 tileset = loadTexture("assets/tileset.png")
+bang = pygame.mixer.Sound("assets/bang.wav")
+squish = pygame.mixer.Sound("assets/squish.wav")
 
 #Bullet
 vertices = [

@@ -31,10 +31,11 @@ class PlasmaGun(Item):
 					math.sin(user.rotation.y * 3.14 / 180) * math.cos(user.rotation.x * 3.14 / 180),
 					-math.sin(user.rotation.x * 3.14 / 180),
 					-math.cos(user.rotation.y * 3.14 / 180) * math.cos(user.rotation.x * 3.14 / 180))
-				world.entities.append(Bullet(
+				world.visuals.append(Bullet(
 					Vec3(user.position.x, user.position.y + 0.3, user.position.z) + lookDir,
 					lookDir
 				))
+				assets.bang.play()
 		else:
 			self.firing = False
 
@@ -56,6 +57,7 @@ class Player(Entity):
 		self.velocity = Vec3(0, 0, 0)
 		self.grounded = False
 		rad = Vec3(0.25, 0.45, 0.25)
+		self.rad = rad
 		self.faceMesh = (
 			Vec3(-rad.x, -rad.y, -rad.z),
 			Vec3(-rad.x, -rad.y, rad.z),
@@ -127,12 +129,13 @@ class Player(Entity):
 		self.item.update(world, self, usingItem)
 
 class Particle(Entity):
-	def __init__(self, position, velocity, texture):
+	def __init__(self, position, velocity, texture, weight = 1):
 		super().__init__(position)
 		self.texture = texture
 		self.velocity = velocity
 		self.rotation = Vec3(0, 0, 0)
 		self.vbo = assets.particleVBO
+		self.weight = weight
 
 	def draw(self):
 		glPushMatrix()
@@ -167,7 +170,7 @@ class Particle(Entity):
 		else:
 			self.position.y += self.velocity.y
 
-		self.velocity.y += gravity
+		self.velocity.y += gravity * self.weight
 
 		if world.checkCollision(self.position + Vec3(self.velocity.x, 0, 0)):
 			pass
@@ -257,7 +260,19 @@ class Bullet(Entity):
 		else:
 			self.rotation.y = math.atan(toPlayer.x / toPlayer.z) * 180 / 3.14
 
-		self.velocity.y += gravity
+		for entity in world.entities:
+			dist = Vec3(
+				abs(self.position.x - entity.position.x),
+				abs(self.position.y - entity.position.y),
+				abs(self.position.z - entity.position.z)
+			)
+			if (dist.x < entity.rad.x and
+				dist.y < entity.rad.y and
+				dist.z < entity.rad.z):
+				entity.velocity += self.velocity * 2
+				return True
+
+		#self.velocity.y += gravity
 
 		if world.checkCollision(self.position + Vec3(0, self.velocity.y, 0)):
 			return True
@@ -278,7 +293,7 @@ class Bullet(Entity):
 			Particle(
 				Vec3(self.position.x, self.position.y, self.position.z), 
 				Vec3(random.randint(-1, 1), random.randint(0, 2), random.randint(-1, 1)) * 0.02,
-				assets.bullet
+				assets.bullet, -0.6
 			)
 		)
 
@@ -291,7 +306,8 @@ class Slime(Entity):
 		self.maxSpeed = 0.1
 		self.rotation = Vec3(0, 0, 0)
 		self.health = 10
-		rad = Vec3(0.25, 0.45, 0.25)
+		rad = Vec3(0.4, 0.4, 0.4)
+		self.rad = rad
 		self.faceMesh = (
 			Vec3(-rad.x, -rad.y, -rad.z),
 			Vec3(-rad.x, -rad.y, rad.z),
@@ -354,12 +370,15 @@ class Slime(Entity):
 		else:
 			self.rotation.y = math.atan(toPlayer.x / toPlayer.z) * 180 / 3.14
 
+		dist = abs(toPlayer.x) + abs(toPlayer.y)
 		toPlayer = toPlayer.unit()
 
-		if random.randint(0, 5) == 0 and self.grounded:
+		if random.randint(0, 50) == 0 and self.grounded:
 			self.velocity.x += random.randint(0, 10) / 100 * toPlayer.x
-			self.velocity.y += random.randint(0, 20) / 100
+			self.velocity.y += random.randint(10, 20) / 100
 			self.velocity.z += random.randint(0, 10) / 100 * toPlayer.z
+			assets.squish.set_volume(1 / (dist * dist))
+			assets.squish.play()
 			for i in range(5):
 				world.visuals.append(
 					Particle(
