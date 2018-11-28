@@ -29,10 +29,32 @@ class World(object):
 		self.toLight = Vec3(0.4, 1, 0.7).unit()
 		self.player = Player(Vec3(1, 3, 11.5), Vec3(0, 0, 0))
 		self.visuals = [
-			Door(Vec3(-0.01, 2.5, 11.5)),
-			Door(Vec3(23.01, 2.5, 11.5))
+			Key(Vec3(16, 0.25, 12), [255, 255, 0]),
+			Key(Vec3(58, 0.25, 59), [0, 255, 255]),
+			Key(Vec3(59, 0.25, 7), [255, 0, 0]),
+			Key(Vec3(22.5, 2.75, 47.5), [0, 0, 255])
 		]
-		self.entities = []
+		self.doors = [
+			Door(Vec3(23, 2.5, 11.5), self.visuals[0], True),
+			Door(Vec3(33, 2, 31.5), self.visuals[1], True),
+			Door(Vec3(28.5, 0, 23), self.visuals[2], False),
+			Door(Vec3(7.5, 2, 40), self.visuals[2], False),
+			Door(Vec3(55.5, 0, 55), self.visuals[3], False)
+		]
+		self.entities = [
+			Slime(Vec3(16, 5, 4)),
+			Slime(Vec3(34, 5, 12)),
+			Slime(Vec3(33, 5, 12)),
+			Slime(Vec3(18, 5, 32)),
+			Slime(Vec3(7, 5, 50)),
+			Slime(Vec3(7.5, 5, 50)),
+			Slime(Vec3(8, 5, 50)),
+			Slime(Vec3(46, 5, 32)),
+			Slime(Vec3(47, 5, 32)),
+			Slime(Vec3(46.5, 5, 32)),
+			Slime(Vec3(55, 5, 44)),
+			Slime(Vec3(56, 5, 44)),
+		]
 
 	def __repr__(self):
 		return "World(" + str(self.size) + ", " + str(self.columns) + ")"
@@ -148,31 +170,6 @@ class World(object):
 					for vertex in newVertices:
 						colors.extend(self.calcShade(vertex, normal))
 
-		#add door frames and lights
-		newVertices = (
-			#enter door
-			Vec3(0, 5.5, 10.5),
-			Vec3(0, 5.5, 12.5),
-			Vec3(0, 2.5, 12.5),
-			Vec3(0, 2.5, 10.5),
-			#exit door
-			Vec3(23, 5.5, 12.5),
-			Vec3(23, 5.5, 10.5),
-			Vec3(23, 2.5, 10.5),
-			Vec3(23, 2.5, 12.5),
-		) 
-		for vertex in newVertices: 
-			vertices.extend(vertex.toList())
-		texCoords.extend((
-			1, 7 / 8,
-			14 / 16, 7 / 8,
-			14 / 16, 4 / 8,
-			1, 4 / 8,
-		) * 2)
-		normal = self.calcNormal(newVertices)
-		for vertex in newVertices:
-			colors.extend(self.calcShade(vertex, normal))
-
 
 		self.vbo = glGenBuffers(3)
 		glBindBuffer(GL_ARRAY_BUFFER, self.vbo[0])
@@ -184,6 +181,14 @@ class World(object):
 
 	
 	def draw(self):
+		#create transformation matrix
+		glEnable(GL_DEPTH_TEST)
+		glPushMatrix()
+		glRotatef(self.player.rotation.x + self.player.shake.y, 1, 0, 0)
+		glRotatef(self.player.rotation.y + self.player.shake.x, 0, 1, 0)
+		glTranslatef(-self.player.position.x, -self.player.position.y - 0.3, -self.player.position.z)
+
+		#draw the level
 		glBindTexture(GL_TEXTURE_2D, self.tileset)
 		glBindBuffer(GL_ARRAY_BUFFER, self.vbo[0])
 		glVertexPointer(3, GL_FLOAT, 0, None)
@@ -192,6 +197,8 @@ class World(object):
 		glBindBuffer(GL_ARRAY_BUFFER, self.vbo[2])
 		glColorPointer(3, GL_FLOAT, 0, None)
 		glDrawArrays(GL_QUADS, 0, self.size.x * self.size.y * 11)
+
+		#draw entities
 		for ent in range(len(self.entities) - 1, -1, -1):
 			if self.entities[ent].update(self) == True:
 				self.entities.pop(ent)
@@ -202,8 +209,17 @@ class World(object):
 				self.visuals.pop(ent)
 			else:
 				self.visuals[ent].draw()
+		for ent in range(len(self.doors) - 1, -1, -1):
+			self.doors[ent].update(self)
+			self.doors[ent].draw()
+
+		#draw gui
+		self.player.draw()
 
 	def checkCollision(self, point):
+		for door in self.doors:
+			if door.checkCollision(point):
+				return True
 		point = Vec3(round(point.x), point.y, round(point.z))
 		return (
 			point.x < 0 or point.z < 0 or

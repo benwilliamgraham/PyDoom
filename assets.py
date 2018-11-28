@@ -23,13 +23,46 @@ def loadTexture(filename):
 
 	return textureID
 
+bar = loadTexture("assets/bar.png")
 bullet = loadTexture("assets/bullet.png")
 crosshairs = loadTexture("assets/crosshairs.png")
 door = loadTexture("assets/door.png")
+health = loadTexture("assets/health.png")
+key = loadTexture("assets/key.png")
+plasmaGun = loadTexture("assets/plasmaGun.png")
 slime = loadTexture("assets/slime.png")
 tileset = loadTexture("assets/tileset.png")
+title = loadTexture("assets/title.png")
+
 bang = pygame.mixer.Sound("assets/bang.wav")
+doorOpen = pygame.mixer.Sound("assets/doorOpen.wav")
+doorClose = pygame.mixer.Sound("assets/doorClose.wav")
+hit = pygame.mixer.Sound("assets/hit.wav")
+keyGet = pygame.mixer.Sound("assets/keyGet.wav")
 squish = pygame.mixer.Sound("assets/squish.wav")
+music = pygame.mixer.Sound("assets/music.wav")
+
+#Entity
+vertices = [
+	-0.5, 0.5, 0,
+	-0.5, -0.5, 0,
+	0.5, -0.5, 0,
+	0.5, 0.5, 0
+]
+textureCoords = [
+	0, 1,
+	0, 0,
+	1, 0,
+	1, 1
+]
+colors = [1] * 12
+entityVBO = glGenBuffers(3)
+glBindBuffer(GL_ARRAY_BUFFER, entityVBO[0])
+glBufferData(GL_ARRAY_BUFFER, len(vertices) * 4, (c_float * len(vertices))(*vertices), GL_STATIC_DRAW)
+glBindBuffer(GL_ARRAY_BUFFER, entityVBO[1])
+glBufferData(GL_ARRAY_BUFFER, len(textureCoords) * 4, (c_float * len(textureCoords))(*textureCoords), GL_STATIC_DRAW)
+glBindBuffer(GL_ARRAY_BUFFER, entityVBO[2])
+glBufferData(GL_ARRAY_BUFFER, len(colors) * 4, (c_float * len(colors))(*colors), GL_STATIC_DRAW)
 
 #Bullet
 vertices = [

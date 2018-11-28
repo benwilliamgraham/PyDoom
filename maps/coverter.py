@@ -1,9 +1,9 @@
 import pygame
 import random
 
-level = pygame.image.load("map1.png")
+level = pygame.image.load("map2.png")
 
-size = [24, 12, 24]
+size = [64, 12, 64]
 heights = []
 
 def toVal(r, g, b):
@@ -45,4 +45,4 @@ for x in range(size[0]):
 		world += "Column" + str(heights[x][z]) + ", "
 	world += "\n], "
 world += "])"
-open("map1.wad", "wt").write(str(world))
+open("map2.wad", "wt").write(str(world))
