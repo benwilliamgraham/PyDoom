@@ -21,40 +21,23 @@ class Column(object):
 		return "Column(" + str(self.height) + ", " + str(self.texture) + ")"
 
 class World(object):
-	def __init__(self, size, columns):
-		self.size = size
-		self.columns = columns
+	def __init__(self, filename):
+
+		self.multiplayer = True
+ 
+		self.size, self.columns = eval(
+			open("maps/" + filename + ".map", "rt").read()
+		)
+
+		self.numEnemies, self.visuals, self.doors, self.entities = eval(
+			open("maps/" + filename + ".ent", "rt").read()
+		)
+
 		self.vbo = None
 		self.tileset = assets.tileset
 		self.toLight = Vec3(0.4, 1, 0.7).unit()
-		self.player = Player(Vec3(1, 3, 11.5), Vec3(0, 0, 0))
-		self.visuals = [
-			Key(Vec3(16, 0.25, 12), [255, 255, 0]),
-			Key(Vec3(58, 0.25, 59), [0, 255, 255]),
-			Key(Vec3(59, 0.25, 7), [255, 0, 0]),
-			Key(Vec3(22.5, 2.75, 47.5), [0, 0, 255])
-		]
-		self.doors = [
-			Door(Vec3(23, 2.5, 11.5), self.visuals[0], True),
-			Door(Vec3(33, 2, 31.5), self.visuals[1], True),
-			Door(Vec3(28.5, 0, 23), self.visuals[2], False),
-			Door(Vec3(7.5, 2, 40), self.visuals[2], False),
-			Door(Vec3(55.5, 0, 55), self.visuals[3], False)
-		]
-		self.entities = [
-			Slime(Vec3(16, 5, 4)),
-			Slime(Vec3(34, 5, 12)),
-			Slime(Vec3(33, 5, 12)),
-			Slime(Vec3(18, 5, 32)),
-			Slime(Vec3(7, 5, 50)),
-			Slime(Vec3(7.5, 5, 50)),
-			Slime(Vec3(8, 5, 50)),
-			Slime(Vec3(46, 5, 32)),
-			Slime(Vec3(47, 5, 32)),
-			Slime(Vec3(46.5, 5, 32)),
-			Slime(Vec3(55, 5, 44)),
-			Slime(Vec3(56, 5, 44)),
-		]
+		self.player = Player(Vec3(1, 5, 11.5), Vec3(0, 0, 0))
+		self.hard = False
 
 	def __repr__(self):
 		return "World(" + str(self.size) + ", " + str(self.columns) + ")"
@@ -184,8 +167,8 @@ class World(object):
 		#create transformation matrix
 		glEnable(GL_DEPTH_TEST)
 		glPushMatrix()
-		glRotatef(self.player.rotation.x + self.player.shake.y, 1, 0, 0)
-		glRotatef(self.player.rotation.y + self.player.shake.x, 0, 1, 0)
+		glRotatef(self.player.rotation.x + self.player.shake.y * 0.5, 1, 0, 0)
+		glRotatef(self.player.rotation.y + self.player.shake.x * 0.5, 0, 1, 0)
 		glTranslatef(-self.player.position.x, -self.player.position.y - 0.3, -self.player.position.z)
 
 		#draw the level

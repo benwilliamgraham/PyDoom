@@ -1,0 +1,60 @@
+[24,
+[
+	Key(Vec3(16, 0.25, 12), [255, 255, 0]),
+	Key(Vec3(58, 0.25, 59), [0, 255, 255]),
+	Key(Vec3(59, 0.25, 7), [255, 0, 0]),
+	Key(Vec3(22.5, 2.75, 47.5), [0, 0, 255]),
+	HealthPack(Vec3(19, 2.75, 33)),
+	HealthPack(Vec3(61, 0.75, 59)),
+	HealthPack(Vec3(16, 3.25, 47.5)),
+	Pickup(Vec3(3, 3, 12), PlasmaRifle()),
+	Pickup(Vec3(9.5, 3.5, 55), PlasmaShotgun()),
+	Pickup(Vec3(58, 3, 28), PlasmaSMG()),
+],
+[
+	#walkaround
+	Door(Vec3(23, 2.5, 11.5), Key(Vec3(0, 0, 0), [255, 255, 0]), True, [
+		Slime(Vec3(34, 5, 12)),
+		Slime(Vec3(59, 5, 6)),
+		Skull(Vec3(33, 5, 12)),
+	]),
+
+	#big pillars
+	Door(Vec3(28.5, 0, 23), Key(Vec3(0, 0, 0), [255, 0, 0]), False, [
+		Slime(Vec3(6, 5, 32)),
+		Slime(Vec3(10, 5, 38)),
+		Slime(Vec3(18, 5, 38)),
+		Skull(Vec3(20, 5, 38)),
+		Slime(Vec3(30, 5, 32)),
+	]),
+
+	#boxes
+	Door(Vec3(7.5, 2, 40), Key(Vec3(0, 0, 0), [255, 0, 0]), False, [
+		Slime(Vec3(7, 5, 45)),
+		Slime(Vec3(5, 5, 48)),
+		Skull(Vec3(7, 5, 50)),
+		Skull(Vec3(58, 5, 60)),
+		Slime(Vec3(9, 5, 50)),
+		Slime(Vec3(58, 5, 60)),
+	]),
+
+	#pit
+	Door(Vec3(33, 2, 31.5), Key(Vec3(0, 0, 0), [0, 255, 255]), True, [
+		Slime(Vec3(46, 5, 32)),
+		Slime(Vec3(58, 5, 28)),
+		Skull(Vec3(47, 5, 32)),
+		Skull(Vec3(47, 5, 35)),
+		Slime(Vec3(58, 5, 32)),
+	]),
+
+	#finale
+	Door(Vec3(55.5, 0, 55), Key(Vec3(0, 0, 0), [0, 0, 255]), False, [
+		Slime(Vec3(52, 5, 44)),
+		Slime(Vec3(53, 5, 44)),
+		Skull(Vec3(54, 5, 44)),
+		Skull(Vec3(56, 5, 44)),
+	])
+],
+[
+	Slime(Vec3(16, 5, 4))
+]]

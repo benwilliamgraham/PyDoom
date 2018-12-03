@@ -12,7 +12,7 @@ def loadTexture(filename):
 	textureID = glGenTextures(1)
 
 	glBindTexture(GL_TEXTURE_2D, textureID)
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
 				img.get_width(), img.get_height(),
 				0, GL_RGBA, GL_UNSIGNED_BYTE, data)
 
@@ -28,9 +28,17 @@ bullet = loadTexture("assets/bullet.png")
 crosshairs = loadTexture("assets/crosshairs.png")
 door = loadTexture("assets/door.png")
 health = loadTexture("assets/health.png")
+healthPack = loadTexture("assets/healthPack.png")
 key = loadTexture("assets/key.png")
-plasmaGun = loadTexture("assets/plasmaGun.png")
+notification = loadTexture("assets/notification.png")
+plasmaRifle = loadTexture("assets/plasmaRifle.png")
+plasmaRiflePickup = loadTexture("assets/plasmaRiflePickup.png")
+plasmaSMG = loadTexture("assets/plasmaSMG.png")
+plasmaSMGPickup = loadTexture("assets/plasmaSMGPickup.png")
+plasmaShotgun = loadTexture("assets/plasmaShotgun.png")
+plasmaShotgunPickup = loadTexture("assets/plasmaShotgunPickup.png")
 slime = loadTexture("assets/slime.png")
+skull = loadTexture("assets/skull.png")
 tileset = loadTexture("assets/tileset.png")
 title = loadTexture("assets/title.png")
 
@@ -38,8 +46,9 @@ bang = pygame.mixer.Sound("assets/bang.wav")
 doorOpen = pygame.mixer.Sound("assets/doorOpen.wav")
 doorClose = pygame.mixer.Sound("assets/doorClose.wav")
 hit = pygame.mixer.Sound("assets/hit.wav")
-keyGet = pygame.mixer.Sound("assets/keyGet.wav")
+collect = pygame.mixer.Sound("assets/keyGet.wav")
 squish = pygame.mixer.Sound("assets/squish.wav")
+roar = pygame.mixer.Sound("assets/roar.wav")
 music = pygame.mixer.Sound("assets/music.wav")
 
 #Entity

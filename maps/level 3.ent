@@ -1,0 +1,45 @@
+[1,
+[
+	#Long Hall
+	Key(Vec3(12.5, 0.25, 40.5), [0, 255, 0]),
+
+	#Downstairs
+	Key(Vec3(45.5, 3.75, 24.5), [0, 255, 255]),
+
+	#Double Computers
+	Key(Vec3(28, 0.25, 34.5), [0, 0, 255]),
+
+	#Control Room
+	Key(Vec3(55, 0.25, 21), [255, 255, 0]),
+
+	#Big Pillar
+	Key(Vec3(22, 0.25, 8.5), [255, 0, 0]),
+
+	Pickup(Vec3(3, 4, 16), PlasmaRifle()),
+	Pickup(Vec3(7, 0.5, 56), PlasmaShotgun()),
+	Pickup(Vec3(43.5, 0.5, 49.5), PlasmaSMG()),
+],
+[
+	#Long Hall
+	Door(Vec3(25, 3.5, 24.5), Key(Vec3(0, 0, 0), [0, 255, 0]), True, [
+	]),
+	
+	#Downstairs
+	Door(Vec3(45.5, 3.5, 31), Key(Vec3(0, 0, 0), [0, 255, 255]), False, [
+	]),
+
+	#Double Computers
+	Door(Vec3(26.5, 3.5, 40), Key(Vec3(0, 0, 0), [0, 0, 255]), False, [
+	]),
+
+	#Control Room
+	Door(Vec3(19, 0, 16.5), Key(Vec3(0, 0, 0), [255, 255, 0]), True, [
+	]),
+	
+	#Big Pillar
+	Door(Vec3(30, 0, 3.5), Key(Vec3(0, 0, 0), [255, 0, 0]), True, [
+	]),
+],
+[
+
+]]

@@ -1,14 +1,14 @@
 import pygame
 import random
 
-level = pygame.image.load("map2.png")
+level = pygame.image.load("level 3.png")
 
 size = [64, 12, 64]
 heights = []
 
 def toVal(r, g, b):
 	if r == 255 and g == 255 and b == 255:
-		return 6
+		return 9
 	if r == 255 and g == 255:
 		return 1
 	if r == 255 and b == 255:
@@ -38,11 +38,11 @@ for y in range(size[1]):
 			if pixel.a == 255:
 				heights[x][z] = (y / 2, toVal(pixel.r, pixel.g, pixel.b))
 
-world = "World(Vec2(" + str(size[0]) + ", " + str(size[2]) + "), ["
+world = "[Vec2(" + str(size[0]) + ", " + str(size[2]) + "), ["
 for x in range(size[0]):
 	world += "[\n"
 	for z in range(size[2]):
 		world += "Column" + str(heights[x][z]) + ", "
 	world += "\n], "
-world += "])"
-open("map2.wad", "wt").write(str(world))
+world += "]]"
+open("level 3.map", "wt").write(str(world))

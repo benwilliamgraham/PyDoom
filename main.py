@@ -10,8 +10,9 @@ import os
 os.environ['SDL_VIDEO_WINDOW_POS'] = "140, 30"
 
 #sound initialization
-pygame.mixer.pre_init(44100, -16, 1, 512)
+pygame.mixer.pre_init(44100, -8, 1, 512)
 pygame.mixer.init()
+pygame.mixer.set_num_channels(16)
 
 #window initialization
 from OpenGL.GL import *
@@ -30,25 +31,26 @@ glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 glEnable(GL_BLEND)
 pygame.display.set_icon(pygame.image.load("assets/icon.png"))
 
-#create game clock
-clock = pygame.time.Clock()
-
 #other imports
 import assets
 from world import *
 from entity import *
 
-def main(): 
-	world = eval(open("maps/map2.wad", "rt").read())
+#create game clock
+clock = pygame.time.Clock()
+
+#create music
+assets.music.set_volume(0)#0.2)
+assets.music.play(-1)
+
+def main():
+	world = World("level 3")
 
 	world.mesh()
 
 	player = Player(Vec3(1, 3, 11.5), Vec3(0, 0, 0))
 	gamemode = "title"
 	running = True
-
-	assets.music.set_volume(0.2)
-	assets.music.play(-1)
 
 	#game loop
 	while running:
@@ -74,11 +76,11 @@ def main():
 			if keys[K_ESCAPE]:
 				running = False
 			if keys[K_b]:
-				gamemode = "running"
+				gamemode = "game"
 			#actualy draw screen
 			pygame.display.flip()
 			clock.tick(60)
-		else:
+		elif gamemode == "game":
 			#check to make sure the window isn't being closed
 			events = pygame.event.get()
 			keys = pygame.key.get_pressed()
@@ -87,6 +89,8 @@ def main():
 					running = False
 			if keys[K_ESCAPE]:
 				running = False
+			if keys[K_p]:
+				gamemode = "pause"
 
 			#update the player
 			world.player.control(world, keys, display)
@@ -94,7 +98,7 @@ def main():
 				print("You Lost")
 				main()
 				gamemode = "exit"
-			if len(world.entities) == 0:
+			if world.numEnemies == 0:
 				print("You Won")
 				main()
 				gamemode = "exit"
@@ -107,6 +111,18 @@ def main():
 
 			#actualy draw screen
 			pygame.display.flip()
+			clock.tick(60)
+		else:
+			#check to make sure the window isn't being closed
+			events = pygame.event.get()
+			keys = pygame.key.get_pressed()
+			for event in events:
+				if event.type == pygame.QUIT:
+					running = False
+			if keys[K_ESCAPE]:
+				running = False
+			if keys[K_r]:
+				gamemode = "game"
 			clock.tick(60)
 	print(clock.get_fps())
 	pygame.quit()
