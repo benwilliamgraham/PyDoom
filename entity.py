@@ -11,6 +11,58 @@ import assets
 
 gravity = -0.01
 
+class Button(object):
+	def __init__(self, position, text, underlined = False):
+		self.position = position
+		self.text = text
+		surface = pygame.Surface((512, 512))
+		assets.fontBig.set_underline(underlined)
+		surface.blit(assets.fontBig.render(text, True, (252, 236, 199)), (0, 200))
+		self.texture = assets.toTexture(surface)
+		self.hover = False
+
+	def update(self):
+		mouse = pygame.mouse.get_pos()
+		if (abs(mouse[0] + 70 - self.position.x) < 150 and
+			abs(mouse[1] + 15 - self.position.y) < 30):
+			self.hover = True
+			if pygame.mouse.get_pressed()[0]:
+				return True
+		else:
+			self.hover = False
+
+		return False
+
+	def draw(self):
+		#draw menu
+		glPushMatrix()
+		glTranslatef(
+			-2.52 / 2 + self.position.x * 2.52 / 1080,
+			1.4 / 2 - self.position.y * 1.4 / 600,
+			-1)
+		glScale(1, 1, 1)
+		glBindTexture(GL_TEXTURE_2D, self.texture)
+		glBindBuffer(GL_ARRAY_BUFFER, assets.entityVBO[0])
+		glVertexPointer(3, GL_FLOAT, 0, None)
+		glBindBuffer(GL_ARRAY_BUFFER, assets.entityVBO[1])
+		glTexCoordPointer(2, GL_FLOAT, 0, None)
+		glBindBuffer(GL_ARRAY_BUFFER, assets.entityVBO[2])
+		glColorPointer(3, GL_FLOAT, 0, None)
+		glDrawArrays(GL_QUADS, 0, 4 * 12)
+
+		if self.hover:
+			glBindTexture(GL_TEXTURE_2D, assets.highlight)
+			glBindBuffer(GL_ARRAY_BUFFER, assets.entityVBO[0])
+			glVertexPointer(3, GL_FLOAT, 0, None)
+			glBindBuffer(GL_ARRAY_BUFFER, assets.entityVBO[1])
+			glTexCoordPointer(2, GL_FLOAT, 0, None)
+			glBindBuffer(GL_ARRAY_BUFFER, assets.entityVBO[2])
+			glColorPointer(3, GL_FLOAT, 0, None)
+			glDrawArrays(GL_QUADS, 0, 4 * 12)
+
+		glPopMatrix()
+
+
 class Item(object):
 	def __init__(self):
 		pass
@@ -40,6 +92,7 @@ class PlasmaRifle(Item):
 					Vec3(user.position.x, user.position.y + 0.3, user.position.z) + lookDir,
 					lookDir * 0.5, 0.4
 				))
+				assets.bang.set_volume(assets.volume / 3)
 				assets.bang.play()
 				world.player.shake.y += 3
 				world.player.shake.x += 2
@@ -82,6 +135,7 @@ class PlasmaSMG(Item):
 					Vec3(user.position.x, user.position.y + 0.3, user.position.z) + lookDir,
 					lookDir * 0.5, 0.4
 				))
+				assets.bang.set_volume(assets.volume / 3)
 				assets.bang.play()
 				world.player.shake.y += 2
 				world.player.shake.x += 1.5
@@ -130,6 +184,7 @@ class PlasmaShotgun(Item):
 						Vec3(user.position.x, user.position.y + 0.3, user.position.z) + lookDir,
 						lookDir * 0.5, 2.5
 					))
+				assets.bang.set_volume(assets.volume / 3)
 				assets.bang.play()
 				world.player.shake.y += 3
 				world.player.shake.x += 2
@@ -205,6 +260,7 @@ class Pickup(Entity):
 					world.visuals.append(Pickup(world.player.position * 1, world.player.item))
 				world.player.item = self.item
 				world.player.collecting = False
+				assets.collect.set_volume(assets.volume / 3)
 				assets.collect.play()
 				return True
 		else:
@@ -274,6 +330,7 @@ class Player(Entity):
 		return False
 
 	def control(self, world, keys, display):
+		pygame.mouse.set_visible(False)
 		deltaPos = Vec3(0, 0, 0)
 		deltaRot = Vec3(0, 0, 0)
 
@@ -296,10 +353,9 @@ class Player(Entity):
 		deltaRot.y = deltaMouse[0] - display[0] // 2
 		deltaRot.x = deltaMouse[1] - display[1] // 2
 		pygame.mouse.set_pos(display[0] // 2, display[1] // 2)
-		pygame.mouse.set_visible(False)
 
 		#update rotation
-		self.rotation += deltaRot * 0.1
+		self.rotation += deltaRot * 0.1 * ((assets.mouseSensativity + 1) / 2)
 		self.rotation.x = max(min(self.rotation.x, 30), -30)
 		dx = (deltaPos.x * math.cos(self.rotation.y * 3.14 / 180) + deltaPos.z * math.sin(self.rotation.y * 3.14 / 180)) * 0.1
 		dz = (deltaPos.x * math.sin(self.rotation.y * 3.14 / 180) - deltaPos.z * math.cos(self.rotation.y * 3.14 / 180)) * 0.1
@@ -337,6 +393,7 @@ class Player(Entity):
 		#acid damage
 		if self.position.y < 0.4:
 			self.health -= 0.06
+			assets.hit.set_volume(assets.volume / 3)
 			assets.hit.play()
 			#create particles
 			for i in range(5):
@@ -630,6 +687,7 @@ class Door(Entity):
 		 	#make sure the player has the correct key
 		 	self.key in world.player.keys):
 			self.opening = True
+			assets.doorOpen.set_volume(assets.volume / 3)
 			assets.doorOpen.play()
 			world.entities.extend(self.entities)
 
@@ -693,6 +751,7 @@ class Key(Entity):
 			self.hover = True
 			if world.player.collecting:
 				world.player.keys.append(self)
+				assets.collect.set_volume(assets.volume / 3)
 				assets.collect.play()
 				return True
 		else:
@@ -763,6 +822,7 @@ class HealthPack(Entity):
 			self.hover = True
 			if world.player.collecting:
 				world.player.health = min(10, world.player.health + 4)
+				assets.collect.set_volume(assets.volume / 3)
 				assets.collect.play()
 				return True
 		else:
@@ -957,12 +1017,12 @@ class Slime(Entity):
 		toPlayer = toPlayer.unit()
 
 		#jump towards player randomly
-		if random.randint(0, (2 if world.hard else 10)) == 0 and self.grounded:
-			self.velocity.x += random.randint(0, 10) / (75 if world.hard else 100) * toPlayer.x
+		if random.randint(0, (2 if assets.hard else 10)) == 0 and self.grounded:
+			self.velocity.x += random.randint(0, 10) / (75 if assets.hard else 100) * toPlayer.x
 			self.velocity.y += random.randint(10, 20) / 100
-			self.velocity.z += random.randint(0, 10) / (75 if world.hard else 100) * toPlayer.z
+			self.velocity.z += random.randint(0, 10) / (75 if assets.hard else 100) * toPlayer.z
 			if dist < 20:
-				assets.squish.set_volume(1 / dist)
+				assets.squish.set_volume(assets.volume / 3.0 / dist)
 				assets.squish.play()
 
 				#create particles
@@ -1006,6 +1066,7 @@ class Slime(Entity):
 			abs(self.position.y - world.player.position.y) < 1 and
 			abs(self.position.z - world.player.position.z) < 1):
 			world.player.health -= 0.07
+			assets.hit.set_volume(assets.volume)
 			assets.hit.play()
 
 		#check if dead
@@ -1101,11 +1162,11 @@ class Skull(Entity):
 			)
 
 		#charge player
-		if random.randint(0, (90 if world.hard else 120)) == 0 and not self.charging:
+		if random.randint(0, (90 if assets.hard else 120)) == 0 and not self.charging:
 			self.charging = True
-			self.velocity += toPlayer * (0.25 if world.hard else 0.15)
+			self.velocity += toPlayer * (0.25 if assets.hard else 0.15)
 			if dist < 30:
-				assets.roar.set_volume(10 / dist)
+				assets.roar.set_volume(assets.volume * 3.5 / dist)
 				assets.roar.play()
 
 		#y position update
@@ -1134,6 +1195,7 @@ class Skull(Entity):
 			abs(self.position.y - world.player.position.y) < 1 and
 			abs(self.position.z - world.player.position.z) < 1):
 			world.player.health -= 0.07
+			assets.hit.set_volume(assets.volume)
 			assets.hit.play()
 
 		#check if dead

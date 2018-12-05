@@ -3,17 +3,27 @@ from ctypes import *
 from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
+from world import *
 
+#options
+hard = 0
+mouseSensativity = 1
+musicVolume = 1
+volume = 3
+
+#texture loading
 def loadTexture(filename):
-	img = pygame.image.load(filename)
-	data = pygame.image.tostring(img, "RGBA", 1)
+	image = pygame.image.load(filename)
+	return toTexture(image)
 
+def toTexture(image):
+	data = pygame.image.tostring(image, "RGBA", 1)
 	glEnable(GL_TEXTURE_2D)
 	textureID = glGenTextures(1)
 
 	glBindTexture(GL_TEXTURE_2D, textureID)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-				img.get_width(), img.get_height(),
+				image.get_width(), image.get_height(),
 				0, GL_RGBA, GL_UNSIGNED_BYTE, data)
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
@@ -29,6 +39,7 @@ crosshairs = loadTexture("assets/crosshairs.png")
 door = loadTexture("assets/door.png")
 health = loadTexture("assets/health.png")
 healthPack = loadTexture("assets/healthPack.png")
+highlight = loadTexture("assets/highlight.png")
 key = loadTexture("assets/key.png")
 notification = loadTexture("assets/notification.png")
 plasmaRifle = loadTexture("assets/plasmaRifle.png")
@@ -117,3 +128,14 @@ glBindBuffer(GL_ARRAY_BUFFER, particleVBO[1])
 glBufferData(GL_ARRAY_BUFFER, len(textureCoords) * 4, (c_float * len(textureCoords))(*textureCoords), GL_STATIC_DRAW)
 glBindBuffer(GL_ARRAY_BUFFER, particleVBO[2])
 glBufferData(GL_ARRAY_BUFFER, len(colors) * 4, (c_float * len(colors))(*colors), GL_STATIC_DRAW)
+
+fontBig = pygame.font.Font("assets/font.ttf", 50)
+fontLil = pygame.font.Font("assets/font.ttf", 28)
+
+levelDisplays = [
+	World("level 1"),
+	World("level 2"),
+	World("level 3")
+]
+for world in levelDisplays:
+	world.mesh(False)

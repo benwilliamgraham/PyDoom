@@ -37,7 +37,6 @@ class World(object):
 		self.tileset = assets.tileset
 		self.toLight = Vec3(0.4, 1, 0.7).unit()
 		self.player = Player(Vec3(1, 5, 11.5), Vec3(0, 0, 0))
-		self.hard = False
 
 	def __repr__(self):
 		return "World(" + str(self.size) + ", " + str(self.columns) + ")"
@@ -57,10 +56,6 @@ class World(object):
 		return normal
 
 	def calcShade(self, point, normal):
-		#sun = Vec3(0, 10, 0)
-		#dist = ((point.x - sun.x) ** 2 + (point.y - sun.y) ** 2 + (point.z - sun.z) ** 2) ** 0.5
-		#toSun = (sun - point).unit()
-
 		light = (normal.dot(self.toLight) + 5) / 7.0
 		step = self.toLight * 0.3
 		for i in range(30):
@@ -81,7 +76,7 @@ class World(object):
 				if self.columns[x][y].texture == 0:
 					self.columns[x][y].height += random.randint(0, 3) / 20
 
-	def mesh(self):
+	def mesh(self, roof):
 		self.randomize()
 		vertices = []
 		texCoords = []
@@ -106,25 +101,29 @@ class World(object):
 					(tex + 1) / 16, 7 / 8,
 				))
 				normal = self.calcNormal(newVertices)
-				for vertex in newVertices:
-					colors.extend(self.calcShade(vertex, normal))
-				#top
-				newVertices = (
-					Vec3(x - 0.5, 5.5, y + 0.5),
-					Vec3(x - 0.5, 5.5, y - 0.5),
-					Vec3(x + 0.5, 5.5, y - 0.5),
-					Vec3(x + 0.5, 5.5, y + 0.5),
-				) 
-				for vertex in newVertices: 
-					vertices.extend(vertex.toList())
-				texCoords.extend((
-					15 / 16, 1,
-					14 / 16, 1,
-					14 / 16, 7 / 8,
-					15 / 16, 7 / 8,
-				))
-				acid = max((1 - height) / 12, 0)
-				colors.extend([0.3, 0.3 + acid, 0.3] * 4)
+				if height >= 0:
+					for vertex in newVertices:
+						colors.extend(self.calcShade(vertex, normal))
+				else:
+					colors.extend([1, 1.5, 1] * 4)
+				#roof
+				if roof:
+					newVertices = (
+						Vec3(x - 0.5, 5.5, y + 0.5),
+						Vec3(x - 0.5, 5.5, y - 0.5),
+						Vec3(x + 0.5, 5.5, y - 0.5),
+						Vec3(x + 0.5, 5.5, y + 0.5),
+					) 
+					for vertex in newVertices: 
+						vertices.extend(vertex.toList())
+					texCoords.extend((
+						15 / 16, 1,
+						14 / 16, 1,
+						14 / 16, 7 / 8,
+						15 / 16, 7 / 8,
+					))
+					acid = max((1 - height) / 12, 0)
+					colors.extend([0.3, 0.3 + acid, 0.3] * 4)
 				#sides
 				for side in [(0, -1), (-1, 0), (0, 1), (1, 0)]:
 					nx = x + side[0]
