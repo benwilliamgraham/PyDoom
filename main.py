@@ -49,31 +49,20 @@ def select():
 	levelNames = [
 		Button(Vec2(800, 60), "    Reactor"),
 		Button(Vec2(800, 60), " Control Room"),
-		Button(Vec2(800, 60), "  The Grind")
+		Button(Vec2(800, 60), "   The Grind")
 	]
 
 	title = Button(Vec2(250, 50), "Play Level:", True)
-	play = Button(Vec2(250, 120), " Play")
-	optionsMenu = Button(Vec2(250, 180), " Options")
-	mainMenu = Button(Vec2(250, 240), " Main Menu")
+	title.texture = assets.selectLevel
+	play = Button(Vec2(250, 420), " Play")
+	optionsMenu = Button(Vec2(250, 480), " Options")
+	mainMenu = Button(Vec2(250, 540), " Main Menu")
 
 	prev = Button(Vec2(680, 590), " < Prev")
 	prov = Button(Vec2(990, 590), "       Next >")
 
 	while True:
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-		glPushMatrix()
-		glTranslatef(0, 0, -1000)
-		glScale(2.5, 1.4, 1)
-		glBindTexture(GL_TEXTURE_2D, assets.title)
-		glBindBuffer(GL_ARRAY_BUFFER, assets.entityVBO[0])
-		glVertexPointer(3, GL_FLOAT, 0, None)
-		glBindBuffer(GL_ARRAY_BUFFER, assets.entityVBO[1])
-		glTexCoordPointer(2, GL_FLOAT, 0, None)
-		glBindBuffer(GL_ARRAY_BUFFER, assets.entityVBO[2])
-		glColorPointer(3, GL_FLOAT, 0, None)
-		glDrawArrays(GL_QUADS, 0, 4 * 12)
-		glPopMatrix()
 
 		world = assets.levelDisplays[selected]
 
@@ -151,42 +140,43 @@ def select():
 #options panel
 def options():
 	pygame.mouse.set_visible(True)
-	title = Button(Vec2(650, 50), "Options:", True)
+	title = Button(Vec2(550, 60), "Options:", True)
+	title.texture = assets.options
 
 	transitioning = False
 
-	difficultiesTitle = Button(Vec2(450, 120), " Difficulty:")
+	difficultiesTitle = Button(Vec2(450, 180), " Difficulty:")
 	difficulties = [
-		Button(Vec2(900, 120), " Normal"),
-		Button(Vec2(900, 120), " Extreme"),
+		Button(Vec2(900, 180), " Normal"),
+		Button(Vec2(900, 180), " Extreme"),
 	]
 
-	mouseSensativitiesTitle = Button(Vec2(450, 180), " Sensitivity:")
+	mouseSensativitiesTitle = Button(Vec2(450, 240), " Sensitivity:")
 	mouseSensativities = [
-		Button(Vec2(900, 180), " Low"),
-		Button(Vec2(900, 180), " Medium"),
-		Button(Vec2(900, 180), " High")
-	]
-
-	musicsTitle = Button(Vec2(450, 240), " music:")
-	musics = [
-		Button(Vec2(900, 240), " Off"),
 		Button(Vec2(900, 240), " Low"),
 		Button(Vec2(900, 240), " Medium"),
 		Button(Vec2(900, 240), " High")
 	]
 
-	volumesTitle = Button(Vec2(450, 300), " Volume:")
-	volumes = [
+	musicsTitle = Button(Vec2(450, 300), " music:")
+	musics = [
 		Button(Vec2(900, 300), " Off"),
 		Button(Vec2(900, 300), " Low"),
 		Button(Vec2(900, 300), " Medium"),
 		Button(Vec2(900, 300), " High")
 	]
 
-	resume = Button(Vec2(600, 400), " Resume")
+	volumesTitle = Button(Vec2(450, 360), " Volume:")
+	volumes = [
+		Button(Vec2(900, 360), " Off"),
+		Button(Vec2(900, 360), " Low"),
+		Button(Vec2(900, 360), " Medium"),
+		Button(Vec2(900, 360), " High")
+	]
 
-	mainMenu = Button(Vec2(600, 460), " Main Menu")
+	resume = Button(Vec2(600, 500), " Resume")
+
+	mainMenu = Button(Vec2(600, 560), " Main Menu")
 
 	while True:
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -280,20 +270,107 @@ def game(level):
 		clock.tick(60)
 
 def tutorial():
+	
+	instruction = 0
+	transitioning = False
+
+	prev = Button(Vec2(230, 590), " < Back")
+	prov = Button(Vec2(990, 590), "       Next >")
+
+	while True:
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+		#check to make sure the window isn't being closed
+		events = pygame.event.get()
+		keys = pygame.key.get_pressed()
+		for event in events:
+			if event.type == pygame.QUIT:
+				exit()
+
+		glPushMatrix()
+		glTranslatef(0, 0, -1)
+		glScale(2.52, 1.4, 1)
+		glBindTexture(GL_TEXTURE_2D, assets.instructions[instruction])
+		glBindBuffer(GL_ARRAY_BUFFER, assets.entityVBO[0])
+		glVertexPointer(3, GL_FLOAT, 0, None)
+		glBindBuffer(GL_ARRAY_BUFFER, assets.entityVBO[1])
+		glTexCoordPointer(2, GL_FLOAT, 0, None)
+		glBindBuffer(GL_ARRAY_BUFFER, assets.entityVBO[2])
+		glColorPointer(3, GL_FLOAT, 0, None)
+		glDrawArrays(GL_QUADS, 0, 4 * 12)
+		glPopMatrix()
+
+		if prev.update():
+			if not transitioning:
+				instruction -= 1
+				transitioning = True
+		elif prov.update():
+			if not transitioning:
+				instruction += 1
+				transitioning = True
+		else:
+			transitioning = False
+
+		if instruction < 0 or instruction >= 5:
+			return
+
+		prev.draw()
+		prov.draw()
+
+		pygame.display.flip()
+		clock.tick(60)
+
+def passed():
 	pass
 
-def win():
-	
+def failed():
+	pass
 
 def main():
 	pygame.mouse.set_visible(True)
-	title = Button(Vec2(650, 50), "PYDOOM:", True)
-	play = Button(Vec2(600, 120), " Play")
-	optionsMenu = Button(Vec2(600, 180), " Options")
-	tutorialMenu = Button(Vec2(600, 240), " Tutorial")
-	closeButton = Button(Vec2(600, 300), " Exit")
+	title = Button(Vec2(535, 70), "PYDOOM:", True)
+	title.texture = assets.title
+	play = Button(Vec2(600, 180), " Play")
+	optionsMenu = Button(Vec2(600, 240), " Options")
+	tutorialMenu = Button(Vec2(600, 300), " Tutorial")
+	closeButton = Button(Vec2(600, 360), " Exit")
 
 	while True:
+		#clear the screen
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+		world = assets.levelDisplays[0]
+
+		world.player.rotation.y += 0.5
+		world.player.rotation.x = 20
+		world.player.position.y = 30
+		world.player.position.x = 32
+		world.player.position.z = 32
+
+		#create transformation matrix
+		glEnable(GL_DEPTH_TEST)
+		glPushMatrix()
+		#shift
+		glTranslatef(0, 0, 0)
+		#rotate
+		glRotatef(world.player.rotation.x, 1, 0, 0)
+		glRotatef(world.player.rotation.y, 0, 1, 0)
+		#center
+		glTranslatef(-world.player.position.x, -world.player.position.y - 0.3, -world.player.position.z)
+
+		#draw the level
+		glBindTexture(GL_TEXTURE_2D, world.tileset)
+		glBindBuffer(GL_ARRAY_BUFFER, world.vbo[0])
+		glVertexPointer(3, GL_FLOAT, 0, None)
+		glBindBuffer(GL_ARRAY_BUFFER, world.vbo[1])
+		glTexCoordPointer(2, GL_FLOAT, 0, None)
+		glBindBuffer(GL_ARRAY_BUFFER, world.vbo[2])
+		glColorPointer(3, GL_FLOAT, 0, None)
+		glDrawArrays(GL_QUADS, 0, world.size.x * world.size.y * 11)
+
+		glPopMatrix()
+
+		#make 2d
+		glDisable(GL_DEPTH_TEST)
 		#check to make sure the window isn't being closed
 		events = pygame.event.get()
 		keys = pygame.key.get_pressed()
@@ -309,9 +386,6 @@ def main():
 			tutorial()
 		elif closeButton.update():
 			close()
-
-		#clear the screen
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
 		title.draw()
 		play.draw()

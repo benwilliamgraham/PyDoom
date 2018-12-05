@@ -51,7 +51,18 @@ plasmaShotgunPickup = loadTexture("assets/plasmaShotgunPickup.png")
 slime = loadTexture("assets/slime.png")
 skull = loadTexture("assets/skull.png")
 tileset = loadTexture("assets/tileset.png")
+
 title = loadTexture("assets/title.png")
+options = loadTexture("assets/options.png")
+selectLevel = loadTexture("assets/selectLevel.png")
+
+instructions = [
+	loadTexture("assets/instructions1.png"),
+	loadTexture("assets/instructions2.png"),
+	loadTexture("assets/instructions3.png"),
+	loadTexture("assets/instructions4.png"),
+	loadTexture("assets/instructions5.png"),
+]
 
 bang = pygame.mixer.Sound("assets/bang.wav")
 doorOpen = pygame.mixer.Sound("assets/doorOpen.wav")
@@ -129,8 +140,8 @@ glBufferData(GL_ARRAY_BUFFER, len(textureCoords) * 4, (c_float * len(textureCoor
 glBindBuffer(GL_ARRAY_BUFFER, particleVBO[2])
 glBufferData(GL_ARRAY_BUFFER, len(colors) * 4, (c_float * len(colors))(*colors), GL_STATIC_DRAW)
 
-fontBig = pygame.font.Font("assets/font.ttf", 50)
-fontLil = pygame.font.Font("assets/font.ttf", 28)
+fontBig = pygame.font.Font("assets/pixelBadass.ttf", 50)
+fontLil = pygame.font.Font("assets/pixelBadass.ttf", 28)
 
 levelDisplays = [
 	World("level 1"),
