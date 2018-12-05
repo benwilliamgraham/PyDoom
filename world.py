@@ -105,7 +105,7 @@ class World(object):
 					for vertex in newVertices:
 						colors.extend(self.calcShade(vertex, normal))
 				else:
-					colors.extend([1, 1.5, 1] * 4)
+					colors.extend([0.8, 1, 0.8] * 4)
 				#roof
 				if roof:
 					newVertices = (

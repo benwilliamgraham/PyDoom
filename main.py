@@ -253,10 +253,10 @@ def game(level):
 		#update the player
 		world.player.control(world, keys, display)
 		if world.player.health <= 0:
-			main()
+			failed()
 			return
 		if world.numEnemies == 0:
-			main()
+			passed()
 			return
 
 		#clear the screen
@@ -320,10 +320,58 @@ def tutorial():
 		clock.tick(60)
 
 def passed():
-	pass
+	pygame.mouse.set_visible(True)
+	title = Button(Vec2(535, 170), "Level Passed", True)
+	title.texture = assets.levelPassed
+
+	mainMenu = Button(Vec2(600, 500), "Main Menu")
+
+	while True:
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+		#check to make sure the window isn't being closed
+		events = pygame.event.get()
+		keys = pygame.key.get_pressed()
+		for event in events:
+			if event.type == pygame.QUIT:
+				exit()
+
+		if mainMenu.update():
+			main()
+			return
+
+		title.draw()
+		mainMenu.draw()
+
+		#actualy draw screen
+		pygame.display.flip()
+		clock.tick(60)
 
 def failed():
-	pass
+	pygame.mouse.set_visible(True)
+	title = Button(Vec2(535, 170), "Level Failed", True)
+	title.texture = assets.levelFailed
+
+	mainMenu = Button(Vec2(600, 500), "Main Menu")
+
+	while True:
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+		#check to make sure the window isn't being closed
+		events = pygame.event.get()
+		keys = pygame.key.get_pressed()
+		for event in events:
+			if event.type == pygame.QUIT:
+				exit()
+
+		if mainMenu.update():
+			main()
+			return
+
+		title.draw()
+		mainMenu.draw()
+
+		#actualy draw screen
+		pygame.display.flip()
+		clock.tick(60)
 
 def main():
 	pygame.mouse.set_visible(True)

@@ -64,6 +64,9 @@ instructions = [
 	loadTexture("assets/instructions5.png"),
 ]
 
+levelPassed = loadTexture("assets/levelPassed.png")
+levelFailed = loadTexture("assets/levelFailed.png")
+
 bang = pygame.mixer.Sound("assets/bang.wav")
 doorOpen = pygame.mixer.Sound("assets/doorOpen.wav")
 doorClose = pygame.mixer.Sound("assets/doorClose.wav")
